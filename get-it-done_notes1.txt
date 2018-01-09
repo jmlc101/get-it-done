@@ -1,0 +1,75 @@
+"for each application there should be one database-
+and for each database there should be one user"
+-Database for users account (when creating new user)
+select "Create database with same name and grant all privileges."
+
+SQL Alchemy (object relational mapping)
+takes objects from an application 
+translation those into relational data that lives in database like mysequel
+FlaskSQLAlchemy
+make sure you've activated flask-env, as you want
+to install packages into virtual environment.
+command:
+conda install -c conda-forge flask-sqlalchemy
+WARNING:
+Windows Git Bash users will need to deactivate flask-env and
+ close their terminal, then open a new Git Bash terminal,
+ navigate to this directory, and activate flask-env again 
+before proceeding to use the install command below.
+
+conda install pymysql
+(specific driver for python apps to connect to mysql databases)
+WARNING:
+And again it is advisable for Windows Git Bash to deactivate
+env, close their terminal, then open a new Git Bash terminal,
+ navigate to this directory and activate flask-env before
+ continuing. 
+
+(go back over writing "connection string" within main.py)
+and SQLALCHEMY_ECHO = True
+
+db = SQLAlchemy(app)
+
+every class that is to be stored in database or "persistent"
+will have id (primary key) rows w/i given table
+
+id = db.Column()
+name = db.Column(db.String(120)) #with string data types need
+to set maximum length
+
+
+if __name__ == '__main__':
+    app.run()
+
+python
+
+db.create_all()
+
+>>>new_task = Task('finish ORM lesson 2')
+>>>db.session.add(new_task)
+>>>db.session.commit()
+
+(ways to pull data out of database)
+tasks = Task.query.all()
+
+****why does my "tasks" display 
+<Task 1>
+<Task 2>
+instead of:
+<__main__.Task object at 0x10423aa58>
+<__main__.Task object at 0x10423aac8>
+*****
+
+task.name
+
+db.drop_all()
+vs:
+(something that doesn't destroy database)
+(flask-migrate tool)
+
+
+im mySQL 0 == False, 1 == True:
+(for completed column)
+
+
+

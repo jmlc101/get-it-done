@@ -1,0 +1,124 @@
+error: can't access sql server from local host
+--start up local servers in MAMP first
+
+So first I creat Class in main.py
+class User()
+
+then in python shell we want to create table in our database on local server
+
+in python
+ from main import db,User
+	(why "," between db and User)
+
+db.create_all()
+
+Now lets create new user in database (still w/i python shell)
+new_user = User('chris@launchcode.org', 'cheese')
+db.session.add(new_user)
+db.session.commit()
+
+Now that we have User model Class, and login and registration handlers,
+lets work with handlers and expand their function so that they can actually log in 
+and register users
+
+part 7: Managing login using Session
+from flask import session
+session['email'] = email
+session is dictionary
+(we'll learn about cookies later)
+@app.route('/logout')
+def logout():
+	del session['email']
+	return redirect('/')
+--basically remove email from session
+--"so the existence of the email property within the session dictionary is 
+whats going to be a flag as to whether or not a user is logged in."
+--next step, on request by request bases, check for email to see if they've 
+logged in.
+
+if request.endpoint not in allowed_routes and 'email' not in session:
+-request^  is the object that flask uses to represent the incoming
+http requests
+-endpoint  is the given path 
+
+"RuntimeError: The session is unavailable because no secret key was set.
+ Set the secret_key on the application to something unique and secret."
+
+secret_key must be set in order for sessions to work
+
+sessions are not unique to flask although the way we are using them IS 
+unique to Flask:
+use session by storing a new entry in sesssion dictionary.
+-check to see if new entry is in session dict, to see if session is active
+
+part 8: Flash messages
+flash message usually in base template
+{% with messages = get_flashed_messages() %}
+{% endwith %}
+-set "messages" variable = to value
+-flash messages use the session object to store message for the next
+time the user comes back
+( try:
+print(session)
+ to read session in console
+)
+"calling flash function puts the message in the session,
+calling get_flashed_messages() clears it out of the session"...WHAT?!
+
+            #pass #what does "pass" do again????
+
+can make flash message catagories:
+flash('message', 'catagory')
+
+part 9: The User-Task Relationship
+"one-to-many relationship"
+
+want every task to have an owner, so add owner to init
+in Task Class:
+def __init__(self, name, owner):
+        self.name = name
+        self.completed = False
+	self.owner = owner
+
+ owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+"ForeignKey is key column that links to primary key column of another table"
+
+Now specify that user has many tasks,
+in User Class:
+tasks = db.relationship('Task', backref='owner')
+which class relationship to:
+"populate tasks list with things from class Task, such that owner property
+is equal to user thats in consideration"
+"if have trouble with syntax, refer to notes and online,
+documentation"
+
+adding?:
+python
+
+db.drop_all() #trashes all data
+
+dp.creat_all()
+
+"recreate user in python shell"
+>>>user = User('chris@launchcode.org','cheese')
+>>>task = Task('finish lesson 10', user)
+>>> db.session.add(user)
+>>> db.session.add(task)
+>>> db.session.commit()
+
+adding:
+owner = User.query.filter_by(email=session['email']).first()
+
+@app.route('/', methods=['POST', 'GET'])
+def index():
+
+    if request.method == 'POST':
+        task_name = request.form['task']
+        owner = User.query.filter_by(email=session['email']).first()# I did User.id.....no good
+        new_task = Task(task_name, owner)
+
+check out "private window" with firefox, for private browsing
+
+for good review watch last minute.
+        db.session.add(new_task)
+        db.session.commit()

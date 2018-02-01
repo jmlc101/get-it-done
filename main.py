@@ -1,6 +1,7 @@
 from flask import Flask, request, redirect, render_template, session, flash
 from app import app, db
 from models import User, Task
+from hashutils import make_pw_hash, check_pw_hash
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -67,7 +68,7 @@ def login():
         password = request.form['password']
         #now need to verify password
         user = User.query.filter_by(email=email).first() #query syntax? if user exist, will assign vaule otherwise will assign 'NONE'.
-        if user and user.password == password: #checks if user exists and if password == password
+        if user and check_pw_hash(password, user.pw_hash): #checks if user exists and if password == password
             session['email'] = email
             flash("Logged in")
             return redirect('/')
